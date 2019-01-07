@@ -1,68 +1,44 @@
-const mongoose = require('mongoose');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+// ./mongod --dbpath ~/onedrive/cdg/materials/node/mongo-data
 
-const Todo = mongoose.model('Todo', {
-    text: {
-        type: String,
-        required: true,
-        minlength: 3,
-        trim: true
-    },
-    completed: {
-        type: Boolean,
-        default: false
-    },
-    completedAt: {
-        type: Number,
-        default: null
-    }
-});
+// c:\Program Files\MongoDB\Server\4.0\bin>
+// mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\CDG\Materials\Node\mongo-data
+const express = require('express');
+const bodyParser = require('body-parser');
 
-// const newTodo = new Todo({
-//     text: 'Cook dinner'
+const {mongoose} = require('./db/mongoose');
+const {Todo} = require('./models/todo');
+const {User} = require('./models/user');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+// const firstUser = new User({
+//     email: 'masya@masya.com'
 // });
-//
-// newTodo.save().then((doc) => {
-//     console.log('Saved todo', doc);
+// firstUser.save().then((document) => {
+//     console.log('User created ', JSON.stringify(document, undefined, 2));
 // }, (e) => {
-//     console.log('Unable to save todo');
+//     console.log('Unable to save the document (user) ', e);
 // });
 
-// const bestTodo = new Todo({
-//     text: 'Great thing to do'
-// });
-//
-// bestTodo.save().then((document) => {
-//     console.log('Saved todo', JSON.stringify(document, undefined, 2));
-// }, (e) => {
-//     console.log('Unable to save the document (Todo)', e);
-// });
+app.post('/todos', (req, res) => {
+    const todo = new Todo({
+        text: req.body.text
+    });
 
-
-// Mongoose User model
-// email - required - trimmed - string - minlength = 1
-const User = mongoose.model('User', {
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 1
-    }
-});
-
-const firstUser = new User({
-    email: 'johny_d@johny.d'
-});
-
-firstUser.save().then((document) => {
-    console.log('User created ', JSON.stringify(document, undefined, 2));
-}, (e) => {
-    console.log('Unable to save the document (user) ', e);
+    todo.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
 });
 
 
+app.listen(3000, () => {
+    console.log('Started on port 3000');
+});
 
 
 
