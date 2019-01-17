@@ -32,14 +32,20 @@ const userId = "5c3679a9250744fc76eec80e";
 //     console.log('Todo using findById', JSON.stringify(todo, undefined, 2));
 // }).catch((e) => console.log(e));
 
-User.findById(userId).then((user) => {
-    if (!user) {
-        return console.log('User was not found');
-    }
-    console.log('User found: ' + JSON.stringify(user, undefined, 2));
-}).catch((e) => {
-    console.log(e);
-})
+
+if (!ObjectID.isValid(userId)) {
+    console.log('User id is not valid!');
+} else {
+    User.findById(userId).then((user) => {
+        if (!user) {
+            return console.log('User was not found');
+        }
+        console.log('User found: ' + JSON.stringify(user, undefined, 2));
+    }).catch((e) => {
+        console.log(e);
+    });
+}
+
 
 
 
