@@ -1,8 +1,8 @@
 
-// ./mongod --dbpath ~/onedrive/cdg/materials/node/mongo-data
+// ./mongod --dbpath ~/onedrive/knowledge/materials/node/mongo-data
 
 // c:\Program Files\MongoDB\Server\4.0\bin>
-// mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\CDG\Materials\Node\mongo-data
+// mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\Knowledge\Materials\Node\mongo-data
 const express = require('express');
 const bodyParser = require('body-parser');
 
