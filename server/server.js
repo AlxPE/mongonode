@@ -1,17 +1,18 @@
 
-// ./mongod --dbpath ~/onedrive/cdg/materials/node/mongo-data
+// ./mongod --dbpath ~/onedrive/knowledge/materials/node/mongo-data
 
 // c:\Program Files\MongoDB\Server\4.0\bin>
-// mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\CDG\Materials\Node\mongo-data
+// mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\Knowledge\Materials\Node\mongo-data
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const {ObjectID} = require('mongodb');
-const {mongoose} = require('./db/mongoose');
+const {mongoose} = require('./DB/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -84,8 +85,8 @@ app.get('/todos/:id', (req, res) => {
     // });
 });
 
-app.listen(3000, () => {
-    console.log('Started on port 3000');
+app.listen(port, () => {
+    console.log(`Started on port ${port}`);
 });
 
 module.exports = {
