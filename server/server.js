@@ -24,7 +24,11 @@ app.use(bodyParser.json());
 //     console.log('User created ', JSON.stringify(document, undefined, 2));
 // }, (e) => {
 //     console.log('Unable to save the document (user) ', e);
-// });
+// 0});
+
+app.get('/', (req, res) => {
+    res.send();
+});
 
 app.post('/todos', (req, res) => {
     const todo = new Todo({
