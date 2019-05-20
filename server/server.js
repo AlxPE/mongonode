@@ -3,10 +3,11 @@
 
 // c:\Program Files\MongoDB\Server\4.0\bin>
 // mongod.exe –dbpath C:\Users\Alex-Station\OneDrive\Knowledge\Materials\Node\mongo-data
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const {ObjectID} = require('mongodb');
+
 const {mongoose} = require('./DB/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
@@ -111,6 +112,33 @@ app.get('/todos/:id', (req, res) => {
     //     id: req.params.id,
     //     type: typeof req.params.id
     // });
+});
+
+app.patch('/todos/:id', (req, res) => {
+    const id = req.params.id;
+    const body = _.pick(req.body, ['text', 'completed']);
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send('Id is not valid');
+    }
+
+    if (_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send();
+    });
+
 });
 
 app.listen(port, () => {
