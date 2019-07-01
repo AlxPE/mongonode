@@ -44,17 +44,6 @@ app.post('/todos', (req, res) => {
     });
 });
 
-app.post('/users', (req, res) => {
-    const user = new User({
-        email: req.body.email
-    });
-
-    user.save().then((doc) => {
-        res.send(doc);
-    }, (e) => {
-        res.status(400).send(e);
-    });
-});
 
 // Remove by id route
 app.delete('/todos/:id', (req, res) => {
@@ -145,6 +134,20 @@ app.patch('/todos/:id', (req, res) => {
         res.status(400).send();
     });
 
+});
+
+// POST /users
+app.post('/users', (req, res) => {
+    const body = _.pick(req.body, ['email', 'password']);
+    const user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
 });
 
 app.listen(port, () => {
