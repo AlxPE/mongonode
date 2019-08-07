@@ -90,6 +90,17 @@ UserSchema.statics.findByCredentials = function (email, password) {
     });
 };
 
+
+UserSchema.methods.removeToken = function (token) {
+    var user = this;
+
+    return user.update({
+        $pull: {
+            tokens: {token}
+        }
+    })
+};
+
 UserSchema.pre('save', function(next){
     var user = this;
 
@@ -106,6 +117,7 @@ UserSchema.pre('save', function(next){
     }
 
 });
+
 
 const User = mongoose.model('User', UserSchema);
 
