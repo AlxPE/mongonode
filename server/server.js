@@ -33,9 +33,10 @@ app.get('/', (req, res) => {
     res.send();
 });
 
-app.post('/todos', (req, res) => {
-    const todo = new Todo({
-        text: req.body.text
+app.post('/todos', authenticate, (req, res) => {
+    var todo = new Todo({
+        text: req.body.text,
+        _creator: req.user._id
     });
 
     todo.save().then((doc) => {
@@ -47,14 +48,17 @@ app.post('/todos', (req, res) => {
 
 
 // Remove by id route
-app.delete('/todos/:id', (req, res) => {
-    const id = req.params.id;
+app.delete('/todos/:id', authenticate, (req, res) => {
+    var id = req.params.id;
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send('Id is not valid');
     }
 
-    Todo.findByIdAndRemove(id).then(todo => {
+    Todo.findOneAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then(todo => {
         if (!todo) {
             return res.status(404).send(`There is no todo with such id`);
         }
@@ -64,11 +68,11 @@ app.delete('/todos/:id', (req, res) => {
     });
 });
 
-app.get('/todos', (req, res) => {
-    Todo.find().then((todos) => {
-        res.send({
-            todos,
-        });
+app.get('/todos', authenticate, (req, res) => {
+    Todo.find({
+        _creator: req.user._id
+    }).then((todos) => {
+        res.send({todos});
     }, (e) => {
         res.status(400).send(e);
     });
@@ -84,17 +88,17 @@ app.get('/users', (req, res) => {
     });
 });
 
-// GET /todos/1234324
-// test_id = 5c3671f433439a7072f89e6a
-
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate, (req, res) => {
     const id = req.params.id;
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send('Id is not valid');
     }
 
-    Todo.findById(id).then(todo => {
+    Todo.findOne({
+        _id: id,
+        _creator: req.user._id
+    }).then(todo => {
         if (!todo) {
             return res.status(404).send(`Todo not found :(`);
         }
@@ -103,14 +107,9 @@ app.get('/todos/:id', (req, res) => {
     }).catch((e) => {
         res.status(400).send();
     });
-
-    // res.send({
-    //     id: req.params.id,
-    //     type: typeof req.params.id
-    // });
 });
 
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id', authenticate, (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['text', 'completed']);
 
@@ -125,7 +124,7 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    Todo.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
